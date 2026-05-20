@@ -130,6 +130,30 @@
   .stat-row .num{font-size:22px;font-weight:700;color:#19303a;min-width:48px}
   .stat-row .lbl{color:#4a5a66;line-height:1.3}
 
+  /* featured pro card (above stat rows) */
+  .featured-pro{
+    display:flex;gap:14px;align-items:center;
+    padding:4px 0 14px;border-bottom:1px solid #eef1f4;margin-bottom:2px;
+  }
+  .featured-pro .avatar{
+    width:68px;height:68px;border-radius:50%;overflow:hidden;flex-shrink:0;
+    background:linear-gradient(135deg,#d6e6df,#c8e6d8);
+    border:3px solid #fff;box-shadow:0 2px 8px rgba(15,30,50,.10);
+    position:relative;display:flex;align-items:center;justify-content:center;
+  }
+  .featured-pro .avatar img{width:100%;height:100%;object-fit:cover;display:block}
+  /* initials fallback if the avatar image fails */
+  .featured-pro .avatar.no-img::after{
+    content:attr(data-initials);
+    font-family:"Inter",sans-serif;font-weight:700;color:#1f6f5c;font-size:22px;letter-spacing:.5px;
+  }
+  .featured-pro .meta{min-width:0;flex:1}
+  .featured-pro .meta .who{font-weight:700;font-size:14px;color:#19303a;line-height:1.2}
+  .featured-pro .meta .role{font-weight:500;color:var(--muted)}
+  .featured-pro .stars-row{display:flex;align-items:center;gap:8px;margin:4px 0 3px}
+  .featured-pro .stars-row .num{font-weight:700;color:#19303a;font-size:14px}
+  .featured-pro .caption{font-size:11.5px;color:var(--muted);line-height:1.4}
+
   /* tier cards */
   .tier-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:6px}
   .tier{
@@ -260,6 +284,27 @@
   .step-pane.active{display:block}
 
   /* keep maintenance preview visible-but-grayed when not active tab */
+  /* mockup click feedback */
+  @keyframes mock-pulse{
+    0%{box-shadow:0 0 0 0 rgba(240,162,58,.55)}
+    100%{box-shadow:0 0 0 10px rgba(240,162,58,0)}
+  }
+  .mock-flash{
+    animation:mock-pulse .65s ease-out;
+    outline:2px solid #f0a23a !important;outline-offset:1px;border-radius:4px;
+  }
+  .mock-toast{
+    position:fixed;bottom:32px;left:50%;
+    transform:translateX(-50%) translateY(16px);
+    background:#1f2d3a;color:#fff;padding:11px 18px;border-radius:10px;
+    font-size:13.5px;font-weight:500;box-shadow:0 10px 30px rgba(15,30,50,.28);
+    opacity:0;pointer-events:none;transition:opacity .18s, transform .22s;
+    z-index:9999;display:flex;align-items:center;gap:10px;max-width:90vw;
+  }
+  .mock-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .mock-toast .dot{width:8px;height:8px;border-radius:50%;background:#f0a23a;flex-shrink:0}
+  .mock-toast .msg b{color:#f0a23a;font-weight:600}
+
   @media (max-width:1080px){
     .portal{grid-template-columns:200px 1fr}
     .tier-grid{grid-template-columns:repeat(2,1fr)}
@@ -294,7 +339,7 @@
       <div class="hello">
         <div>
           <div class="label">HELLO</div>
-          <div class="name">Everett Lynn</div>
+          <div class="name">Sarah Thompson</div>
         </div>
         <div class="badge" title="1 notification">1</div>
       </div>
@@ -356,6 +401,33 @@
                   </div>
                 </div>
                 <div class="stat-card">
+                  <div class="featured-pro">
+                    <div class="avatar" data-initials="ML">
+                      <img src="https://api.dicebear.com/9.x/lorelei/svg?seed=MariaCare&backgroundColor=d6e6df,c8e6d8&backgroundType=gradientLinear&earrings=variant01,variant02&hair=variant01,variant05,variant10&mouth=happy03,happy05,happy07" alt="Featured housekeeper Maria L." onerror="this.style.display='none';this.parentElement.classList.add('no-img')" />
+                    </div>
+                    <div class="meta">
+                      <div class="who">Maria L. · <span class="role">Featured Pro</span></div>
+                      <div class="stars-row" aria-label="Rated 4.95 out of 5 stars">
+                        <svg viewBox="0 0 110 20" width="100" height="18" class="stars5" aria-hidden="true">
+                          <defs>
+                            <linearGradient id="star495">
+                              <stop offset="99%" stop-color="#f0a23a"/>
+                              <stop offset="99%" stop-color="#dfe3e7"/>
+                            </linearGradient>
+                          </defs>
+                          <g fill="url(#star495)">
+                            <path d="M10 1.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L10 14.9 4.8 17.6l1-5.8L1.5 7.7l5.9-.9z"/>
+                            <path d="M32 1.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L32 14.9 26.8 17.6l1-5.8-4.3-4.1 5.9-.9z"/>
+                            <path d="M54 1.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L54 14.9 48.8 17.6l1-5.8-4.3-4.1 5.9-.9z"/>
+                            <path d="M76 1.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L76 14.9 70.8 17.6l1-5.8-4.3-4.1 5.9-.9z"/>
+                            <path d="M98 1.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L98 14.9 92.8 17.6l1-5.8-4.3-4.1 5.9-.9z"/>
+                          </g>
+                        </svg>
+                        <span class="num">4.95</span>
+                      </div>
+                      <div class="caption">Background-checked. Verified by Amenify.</div>
+                    </div>
+                  </div>
                   <div class="stat-row"><div class="num">4.9★</div><div class="lbl">average rating across<br>12,000+ cleanings</div></div>
                   <div class="stat-row"><div class="num">60s</div><div class="lbl">to book &amp; confirm — most residents finish in under a minute</div></div>
                   <div class="stat-row"><div class="num">100%</div><div class="lbl">re-clean guarantee. If it's not right, we send a pro back at no cost.</div></div>
@@ -381,7 +453,7 @@
               <div class="unit-bar">
                 <div><span class="k">Unit</span>#105 · 3155 Broderick St, SF 94123</div>
                 <div><span class="k">Type</span>2 bed · 2 bath · 1,180 sqft</div>
-                <div><span class="k">Resident</span>Everett Lynn</div>
+                <div><span class="k">Resident</span>Sarah Thompson</div>
                 <span class="pulled">✓ Pulled from 2B Living</span>
               </div>
 
@@ -538,7 +610,7 @@
                       <div class="field"><label>CVC</label><input value="123" /></div>
                       <div class="field"><label>ZIP</label><input value="94123" /></div>
                     </div>
-                    <div class="field" style="margin-top:10px"><label>Name on card</label><input value="Everett Lynn" /></div>
+                    <div class="field" style="margin-top:10px"><label>Name on card</label><input value="Sarah Thompson" /></div>
                   </div>
 
                   <div class="tos">
@@ -569,7 +641,7 @@
                 <div class="ck-big">✓</div>
                 <h2>You're booked.</h2>
                 <p>A licensed Amenify housekeeper is confirmed for <b>Thu, May 21 · 9a–11a</b>.</p>
-                <p>We've emailed the receipt to <b>everett@amenify.com</b> and notified 2B Living of access for the window.</p>
+                <p>We've emailed the receipt to <b>sarah.thompson@email.com</b> and notified 2B Living of access for the window.</p>
                 <div class="booking-id">Booking #AM-2026-05-7841</div>
 
                 <div class="next">
@@ -666,6 +738,73 @@
       document.querySelectorAll('#slotGrid .slot').forEach(x=>x.classList.remove('selected'));
       s.classList.add('selected');
     });
+  });
+
+  // --- Mockup click feedback ---------------------------------------------
+  // Any click on a non-functional element flashes the element and shows a
+  // brief toast, so partners trying the demo know the click registered.
+  const toast = document.createElement('div');
+  toast.className = 'mock-toast';
+  toast.innerHTML = '<span class="dot"></span><span class="msg"></span>';
+  document.body.appendChild(toast);
+  let toastTimer;
+  function flashMock(el, msg){
+    if (el){
+      el.classList.remove('mock-flash');
+      // force reflow so the animation restarts on rapid re-clicks
+      void el.offsetWidth;
+      el.classList.add('mock-flash');
+      setTimeout(()=>el.classList.remove('mock-flash'), 700);
+    }
+    toast.querySelector('.msg').innerHTML = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(()=>toast.classList.remove('show'), 2400);
+  }
+
+  // Help banner X — actually dismiss (real interaction, not mock)
+  const banner = document.querySelector('.help-banner');
+  const bannerX = banner?.querySelector('.x');
+  bannerX?.addEventListener('click', (e)=>{
+    e.stopPropagation();
+    banner.style.display = 'none';
+  });
+
+  // Global click delegation for dead elements
+  document.addEventListener('click', (e)=>{
+    // Sidebar nav
+    const sideLink = e.target.closest('.sidebar a');
+    if (sideLink){
+      e.preventDefault();
+      if (sideLink.classList.contains('active')){
+        // clicking Service Pros returns to landing
+        flashMock(sideLink, "You're on <b>Service Pros</b>. Sending you to the landing step.");
+        goto(0);
+      } else {
+        const label = sideLink.textContent.replace(/NEW$/,'').trim();
+        flashMock(sideLink, "Mockup only — <b>" + label + "</b> isn't wired up. Try <b>Service Pros</b>.");
+      }
+      return;
+    }
+    // Log out
+    const logout = e.target.closest('.topbar .logout');
+    if (logout){
+      e.preventDefault();
+      flashMock(logout, "Mockup only — <b>Log Out</b> is disabled.");
+      return;
+    }
+    // Partner brand mark
+    const brand = e.target.closest('.topbar .brand');
+    if (brand){
+      flashMock(brand, "Mockup only — partner brand area.");
+      return;
+    }
+    // Footer text
+    const footer = e.target.closest('.footer');
+    if (footer){
+      flashMock(footer, "Mockup only — footer links are disabled.");
+      return;
+    }
   });
 </script>
 </body>
