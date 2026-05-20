@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Service Pros — Embedded Booking Mockup (Amenify white-label)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Sans+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --partner-sidebar:#1f2d3a;     /* 2B Living-ish dark navy */
+    --partner-sidebar-active:#0f1a24;
+    --partner-accent:#f0a23a;       /* orange stripe AppFolio uses on cards */
+    --partner-cta:#1e7fc2;          /* AppFolio blue button */
+    --partner-cta-hover:#1668a0;
+    --bg:#f4f5f7;
+    --card:#ffffff;
+    --text:#212c36;
+    --muted:#6c7783;
+    --border:#e4e7eb;
+    --good:#2f8a4f;
+    --good-bg:#e7f5ec;
+    --cancel:#c0392b;
+    --cancel-bg:#fbe7e4;
+    --amenify:#0f5e4a;              /* small powered-by mark */
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:#e9ebef;font-family:"Source Sans Pro","Inter",system-ui,sans-serif;color:var(--text)}
+  body{min-height:100vh}
+
+  /* outer demo frame */
+  .demo-wrap{max-width:1480px;margin:24px auto;padding:0 16px}
+  .demo-banner{
+    background:#fff;border:1px solid var(--border);border-radius:10px;
+    padding:14px 18px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;
+    box-shadow:0 1px 2px rgba(0,0,0,.04);
+  }
+  .demo-banner .left{display:flex;align-items:center;gap:12px}
+  .demo-pill{background:#eaf4ff;color:#1668a0;font-weight:600;font-size:12px;border-radius:999px;padding:4px 10px;letter-spacing:.3px}
+  .demo-banner h1{font-size:15px;margin:0;font-weight:600}
+  .demo-banner p{margin:0;color:var(--muted);font-size:13px}
+  .demo-steps{display:flex;gap:6px}
+  .step-dot{font-size:12px;color:var(--muted);padding:4px 9px;border:1px solid var(--border);border-radius:999px;background:#fff}
+  .step-dot.is-active{background:#1f2d3a;color:#fff;border-color:#1f2d3a}
+
+  /* portal layout */
+  .portal{
+    display:grid;grid-template-columns:220px 1fr;background:#fff;border-radius:10px;overflow:hidden;
+    box-shadow:0 4px 20px rgba(15,30,50,.08);min-height:780px;
+  }
+
+  /* sidebar */
+  .sidebar{background:var(--partner-sidebar);color:#cfd6dd;display:flex;flex-direction:column}
+  .sidebar .hello{padding:18px 18px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.06)}
+  .sidebar .hello .label{font-size:11px;color:#8fa2b3;text-transform:uppercase;letter-spacing:1.5px}
+  .sidebar .hello .name{font-size:18px;color:#fff;font-weight:600;margin-top:2px}
+  .sidebar .hello .badge{background:#f0a23a;color:#1f2d3a;font-size:11px;font-weight:700;border-radius:999px;width:20px;height:20px;display:flex;align-items:center;justify-content:center}
+  .sidebar nav{padding:6px 0;flex:1}
+  .sidebar a{
+    display:flex;align-items:center;gap:10px;padding:11px 18px;color:#cfd6dd;text-decoration:none;font-size:14px;
+    border-left:3px solid transparent;cursor:pointer;
+  }
+  .sidebar a:hover{background:rgba(255,255,255,.04);color:#fff}
+  .sidebar a.active{background:var(--partner-sidebar-active);color:#fff;border-left-color:var(--partner-accent);font-weight:600}
+  .sidebar a .ico{width:16px;height:16px;opacity:.85}
+  .sidebar .new-pill{background:var(--partner-accent);color:#1f2d3a;font-size:10px;font-weight:700;border-radius:4px;padding:2px 6px;margin-left:auto;letter-spacing:.5px}
+
+  /* main area */
+  .main{display:flex;flex-direction:column;min-width:0}
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:14px 28px;border-bottom:1px solid var(--border);background:#fff;
+  }
+  .topbar .brand{display:flex;align-items:center;gap:10px}
+  .topbar .brand .logo{
+    font-family:"Inter",sans-serif;font-weight:700;color:#83b6a7;letter-spacing:1px;
+    display:flex;align-items:center;gap:4px;
+  }
+  .topbar .brand .logo .big{font-size:26px;color:#5fa18f}
+  .topbar .brand .logo .small{font-size:10px;color:#7e9a92;letter-spacing:3px;margin-top:8px}
+  .topbar .addr{font-size:13px;color:var(--text)}
+  .topbar .addr b{color:var(--muted);font-weight:500;margin-right:8px}
+  .topbar .logout{font-size:13px;color:var(--partner-cta);text-decoration:none}
+
+  .content{padding:28px 36px;background:var(--bg);flex:1;overflow:auto}
+  .page-title{font-family:"Source Sans Pro",sans-serif;font-weight:400;font-size:30px;margin:0 0 18px;color:#22313f}
+
+  .help-banner{
+    background:#e6f3f0;border-radius:6px;padding:10px 14px;display:flex;align-items:center;gap:10px;font-size:13px;color:#1f3d36;margin-bottom:18px;
+  }
+  .help-banner .i{width:18px;height:18px;border-radius:50%;background:#1f6f5c;color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+  .help-banner .x{margin-left:auto;color:#1f3d36;opacity:.5;cursor:pointer}
+
+  /* cards */
+  .card{
+    background:var(--card);border-radius:6px;box-shadow:0 1px 2px rgba(15,30,50,.06);
+    border-top:4px solid var(--partner-accent);overflow:hidden;
+  }
+  .card h2{margin:0;padding:18px 20px 6px;font-weight:600;font-size:18px;color:#22313f}
+  .card .body{padding:6px 20px 22px}
+
+  /* SERVICE PROS landing */
+  .pros-hero{
+    display:grid;grid-template-columns:1.4fr 1fr;gap:24px;align-items:stretch;
+  }
+  .hero-card{
+    background:linear-gradient(135deg,#f7fbfa 0%,#eaf4f0 100%);
+    border-radius:10px;border:1px solid #d6e6df;padding:26px;position:relative;overflow:hidden;
+  }
+  .hero-card .eyebrow{font-size:12px;font-weight:700;letter-spacing:1.5px;color:#1f6f5c;text-transform:uppercase;margin-bottom:10px}
+  .hero-card h2{margin:0 0 6px;font-size:26px;color:#19303a;font-weight:700;line-height:1.2}
+  .hero-card p{color:#3d525e;font-size:14px;line-height:1.55;margin:0 0 16px;max-width:46ch}
+  .check-row{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+  .check-row div{display:flex;gap:8px;align-items:flex-start;font-size:13.5px;color:#22313f}
+  .check-row .ck{width:18px;height:18px;border-radius:50%;background:#1f6f5c;color:#fff;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;margin-top:1px}
+  .cta-row{display:flex;gap:10px;align-items:center}
+  .btn{
+    background:var(--partner-cta);color:#fff;border:none;border-radius:4px;padding:11px 18px;font-size:14px;font-weight:600;cursor:pointer;
+    font-family:inherit;
+  }
+  .btn:hover{background:var(--partner-cta-hover)}
+  .btn.ghost{background:transparent;color:var(--partner-cta);border:1px solid var(--partner-cta)}
+  .btn.ghost:hover{background:#eaf4ff}
+  .btn.lg{padding:13px 22px;font-size:15px}
+  .btn[disabled]{opacity:.5;cursor:not-allowed}
+
+  .stat-card{
+    background:#fff;border-radius:10px;border:1px solid var(--border);padding:20px;display:flex;flex-direction:column;justify-content:center;gap:14px;
+  }
+  .stat-row{display:flex;gap:10px;align-items:center;font-size:13.5px;color:#22313f}
+  .stat-row .num{font-size:22px;font-weight:700;color:#19303a;min-width:48px}
+  .stat-row .lbl{color:#4a5a66;line-height:1.3}
+
+  /* tier cards */
+  .tier-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:6px}
+  .tier{
+    border:1.5px solid var(--border);border-radius:10px;padding:18px;background:#fff;cursor:pointer;position:relative;
+    transition:border-color .15s, box-shadow .15s, transform .1s;
+  }
+  .tier:hover{border-color:#bcd7eb}
+  .tier.selected{border-color:var(--partner-cta);box-shadow:0 0 0 3px rgba(30,127,194,.12)}
+  .tier .name{font-weight:700;font-size:16px;color:#19303a;margin-bottom:2px;display:flex;align-items:center;gap:8px}
+  .tier .pill{font-size:10px;font-weight:700;border-radius:999px;padding:2px 7px;background:#eaf4ff;color:#1668a0;letter-spacing:.4px}
+  .tier .desc{font-size:12.5px;color:var(--muted);min-height:34px;line-height:1.4;margin-bottom:10px}
+  .tier .price{font-weight:700;font-size:22px;color:#19303a}
+  .tier .price small{font-weight:500;font-size:12px;color:var(--muted)}
+  .tier ul{margin:10px 0 0;padding-left:18px;color:#3d525e;font-size:12.5px;line-height:1.55}
+  .tier .ribbon{
+    position:absolute;top:-10px;right:12px;background:#0f5e4a;color:#fff;font-size:10px;font-weight:700;
+    padding:3px 8px;border-radius:4px;letter-spacing:.5px;
+  }
+
+  /* unit info */
+  .unit-bar{
+    display:flex;gap:18px;flex-wrap:wrap;background:#f1f6f4;border:1px solid #d6e6df;border-radius:8px;padding:12px 16px;margin-bottom:18px;
+    font-size:13px;color:#22313f;
+  }
+  .unit-bar .k{color:#1f6f5c;font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.8px;display:block;margin-bottom:2px}
+  .unit-bar .pulled{background:#1f6f5c;color:#fff;font-size:10px;font-weight:700;border-radius:4px;padding:2px 6px;margin-left:auto;align-self:center}
+
+  /* form grid */
+  .form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:10px}
+  .field label{display:block;font-size:12px;font-weight:700;color:#3d525e;text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px}
+  .field input, .field select, .field textarea{
+    width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:4px;background:#fff;font-size:14px;font-family:inherit;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus{outline:2px solid #bcd7eb;outline-offset:0;border-color:#1e7fc2}
+  .field textarea{min-height:72px;resize:vertical}
+
+  /* time slots */
+  .slot-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:6px}
+  .slot{
+    border:1px solid var(--border);border-radius:6px;padding:10px;text-align:center;font-size:13px;cursor:pointer;background:#fff;
+    transition:all .12s;
+  }
+  .slot:hover{border-color:#bcd7eb}
+  .slot.selected{background:#1e7fc2;color:#fff;border-color:#1e7fc2;font-weight:600}
+  .slot .day{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+  .slot.selected .day{color:rgba(255,255,255,.85)}
+  .slot .date{font-weight:700;font-size:15px;margin:2px 0}
+  .slot .win{font-size:11px;color:var(--muted)}
+  .slot.selected .win{color:rgba(255,255,255,.85)}
+
+  /* review */
+  .review-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:18px;margin-top:8px}
+  .review-card{border:1px solid var(--border);border-radius:8px;padding:18px;background:#fff}
+  .review-card h3{margin:0 0 10px;font-size:14px;color:#3d525e;text-transform:uppercase;letter-spacing:.6px}
+  .kv{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed #eef1f4;font-size:14px}
+  .kv:last-child{border-bottom:none}
+  .kv .k{color:var(--muted)}
+  .kv .v{font-weight:600;color:#19303a}
+  .total{display:flex;justify-content:space-between;padding:14px 0 4px;font-size:18px;font-weight:700;color:#19303a;border-top:2px solid #eef1f4;margin-top:6px}
+
+  /* stripe-style card */
+  .stripe-card{border:1px solid var(--border);border-radius:8px;padding:16px;background:#fff;position:relative}
+  .stripe-card .brand-mark{position:absolute;top:14px;right:16px;font-family:"Inter",sans-serif;font-weight:700;color:#635bff;font-size:13px;letter-spacing:.5px}
+  .stripe-card .row{display:flex;gap:10px;margin-top:10px}
+  .stripe-card .row .field{flex:1}
+  .stripe-card input{font-family:"SFMono-Regular",ui-monospace,monospace;letter-spacing:.5px}
+  .tos{
+    display:flex;gap:10px;align-items:flex-start;margin-top:14px;padding:12px 14px;
+    background:#f6f9fb;border:1px solid var(--border);border-radius:6px;font-size:13px;color:#3d525e;line-height:1.5;
+  }
+  .tos input{margin-top:3px;transform:scale(1.1)}
+  .tos a{color:var(--partner-cta);text-decoration:none}
+  .tos a:hover{text-decoration:underline}
+
+  /* confirmation */
+  .confirm{
+    text-align:center;padding:40px 20px;
+  }
+  .confirm .ck-big{
+    width:64px;height:64px;background:#e7f5ec;color:#2f8a4f;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:32px;margin-bottom:18px;
+  }
+  .confirm h2{margin:0 0 8px;font-size:24px;color:#19303a}
+  .confirm p{margin:0 0 6px;color:#3d525e;font-size:14.5px}
+  .confirm .booking-id{display:inline-block;background:#f1f6f4;color:#1f6f5c;font-family:"SFMono-Regular",ui-monospace,monospace;font-size:13px;padding:6px 12px;border-radius:6px;margin-top:14px;letter-spacing:.5px}
+  .confirm .next{margin-top:24px;background:#f6f9fb;border:1px solid var(--border);border-radius:8px;padding:16px 18px;max-width:480px;margin-left:auto;margin-right:auto;text-align:left}
+  .confirm .next h4{margin:0 0 8px;font-size:13px;color:#3d525e;text-transform:uppercase;letter-spacing:.6px}
+  .confirm .next .step-li{display:flex;gap:10px;font-size:13.5px;color:#3d525e;margin-bottom:6px}
+  .confirm .next .step-li .n{background:#1f6f5c;color:#fff;font-weight:700;width:18px;height:18px;border-radius:50%;font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+
+  /* footer */
+  .footer{
+    background:#22313f;color:#cfd6dd;padding:14px 28px;font-size:12px;display:flex;justify-content:space-between;align-items:center;
+  }
+  .footer .left{display:flex;flex-direction:column;gap:2px}
+  .footer .left b{color:#fff;font-weight:600;font-size:13px}
+  .footer .right{font-family:"Inter",sans-serif;font-size:11px;color:#8fa2b3}
+  .footer .appfolio{font-weight:700;color:#fff;letter-spacing:.5px}
+
+  /* powered by - the small white-label tag */
+  .powered{
+    display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);
+    background:#fff;border:1px solid var(--border);border-radius:999px;padding:3px 10px;
+  }
+  .powered .dot{width:6px;height:6px;border-radius:50%;background:var(--amenify)}
+  .powered b{color:var(--amenify);font-weight:700}
+
+  /* step nav */
+  .step-bar{
+    display:flex;align-items:center;gap:0;margin:6px 0 18px;
+  }
+  .step-bar .s{flex:1;display:flex;align-items:center;gap:8px;color:var(--muted);font-size:13px}
+  .step-bar .s .num{
+    width:22px;height:22px;border-radius:50%;background:#e4e7eb;color:#6c7783;font-weight:700;font-size:12px;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .step-bar .s.done .num{background:#2f8a4f;color:#fff}
+  .step-bar .s.active{color:#19303a;font-weight:600}
+  .step-bar .s.active .num{background:#1e7fc2;color:#fff}
+  .step-bar .line{flex:0 0 28px;height:2px;background:#e4e7eb;margin:0 4px}
+  .step-bar .s.done + .line{background:#2f8a4f}
+
+  .actions{display:flex;justify-content:space-between;align-items:center;margin-top:22px;padding-top:18px;border-top:1px solid var(--border)}
+  .price-tag{font-size:14px;color:var(--muted)}
+  .price-tag b{color:#19303a;font-size:18px;margin-left:4px}
+
+  /* hide/show steps */
+  .step-pane{display:none}
+  .step-pane.active{display:block}
+
+  /* keep maintenance preview visible-but-grayed when not active tab */
+  @media (max-width:1080px){
+    .portal{grid-template-columns:200px 1fr}
+    .tier-grid{grid-template-columns:repeat(2,1fr)}
+    .pros-hero{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="demo-wrap">
+
+  <div class="demo-banner">
+    <div class="left">
+      <span class="demo-pill">MOCKUP</span>
+      <div>
+        <h1>Service Pros — embedded booking flow inside partner PMS portal</h1>
+        <p>White-labeled inside 2B Living / AppFolio. Replicable across PMS partners.</p>
+      </div>
+    </div>
+    <div class="demo-steps" id="topSteps">
+      <span class="step-dot is-active" data-step="0">1 · Landing</span>
+      <span class="step-dot" data-step="1">2 · Choose service</span>
+      <span class="step-dot" data-step="2">3 · Schedule</span>
+      <span class="step-dot" data-step="3">4 · Pay</span>
+      <span class="step-dot" data-step="4">5 · Confirmation</span>
+    </div>
+  </div>
+
+  <div class="portal">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="hello">
+        <div>
+          <div class="label">HELLO</div>
+          <div class="name">Everett Lynn</div>
+        </div>
+        <div class="badge" title="1 notification">1</div>
+      </div>
+      <nav>
+        <a><span class="ico">🏠</span>Home</a>
+        <a><span class="ico">💳</span>Payments</a>
+        <a><span class="ico">🔧</span>Maintenance</a>
+        <a class="active" id="navServicePros"><span class="ico">✨</span>Service Pros<span class="new-pill">NEW</span></a>
+        <a><span class="ico">✉️</span>Contact Us</a>
+        <a><span class="ico">📁</span>Shared Documents</a>
+        <a><span class="ico">🛡️</span>Insurance</a>
+        <a><span class="ico">🏢</span>Property Details</a>
+        <a><span class="ico">👤</span>Account Profile</a>
+        <a><span class="ico">❔</span>Help</a>
+      </nav>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="main">
+      <div class="topbar">
+        <div class="brand">
+          <div class="logo">
+            <span class="big">2B</span>
+            <div><div style="font-weight:700;color:#5fa18f;font-size:13px;letter-spacing:3px">LIVING</div>
+              <div class="small">PROPERTY MANAGEMENT</div>
+            </div>
+          </div>
+        </div>
+        <div class="addr"><b>Property Address</b>3155 Broderick Street, Unit 105, San Francisco, CA 94123</div>
+        <a class="logout" href="#">⤴ Log Out</a>
+      </div>
+
+      <div class="content">
+        <h1 class="page-title">Service Pros</h1>
+
+        <div class="help-banner">
+          <span class="i">i</span>
+          Need help moving in or out? Book a tracked &amp; managed housekeeper in under 60 seconds. Pricing is finalized instantly — no waiting on quotes.
+          <span class="x">×</span>
+        </div>
+
+        <!-- STEP 0 — Landing -->
+        <section class="step-pane active" data-step="0">
+          <div class="card">
+            <div class="body">
+              <div class="pros-hero">
+                <div class="hero-card">
+                  <div class="eyebrow">Housekeepers &amp; Cleaners</div>
+                  <h2>Move-in &amp; move-out cleaning, instantly booked.</h2>
+                  <p>Background-checked, insured housekeepers. Pre-priced for your unit. Pay securely — we handle the rest.</p>
+                  <div class="check-row">
+                    <div><span class="ck">✓</span><span><b>Tracked &amp; managed</b> — live status updates, in-app re-clean guarantee if anything's missed.</span></div>
+                    <div><span class="ck">✓</span><span><b>Instant booking</b> — no back-and-forth. Pick a tier, pick a window, you're done.</span></div>
+                    <div><span class="ck">✓</span><span><b>Insured &amp; vetted</b> — every pro is background-checked, COI on file with 2B Living.</span></div>
+                  </div>
+                  <div class="cta-row">
+                    <button class="btn lg" onclick="goto(1)">Book a Cleaning →</button>
+                    <span class="powered"><span class="dot"></span>Powered by <b>Amenify</b></span>
+                  </div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-row"><div class="num">4.9★</div><div class="lbl">average rating across<br>12,000+ cleanings</div></div>
+                  <div class="stat-row"><div class="num">60s</div><div class="lbl">to book &amp; confirm — most residents finish in under a minute</div></div>
+                  <div class="stat-row"><div class="num">100%</div><div class="lbl">re-clean guarantee. If it's not right, we send a pro back at no cost.</div></div>
+                  <div class="stat-row"><div class="num">$0</div><div class="lbl">cost to 2B Living. Amenify handles billing, scheduling, and quality.</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- STEP 1 — Choose service tier -->
+        <section class="step-pane" data-step="1">
+          <div class="card">
+            <div class="body">
+              <div class="step-bar">
+                <div class="s active"><span class="num">1</span>Service</div>
+                <div class="line"></div>
+                <div class="s"><span class="num">2</span>Schedule</div>
+                <div class="line"></div>
+                <div class="s"><span class="num">3</span>Pay</div>
+              </div>
+
+              <div class="unit-bar">
+                <div><span class="k">Unit</span>#105 · 3155 Broderick St, SF 94123</div>
+                <div><span class="k">Type</span>2 bed · 2 bath · 1,180 sqft</div>
+                <div><span class="k">Resident</span>Everett Lynn</div>
+                <span class="pulled">✓ Pulled from 2B Living</span>
+              </div>
+
+              <h2 style="margin:14px 0 4px;font-size:16px;color:#19303a">Choose your cleaning tier</h2>
+              <p style="margin:0 0 14px;color:var(--muted);font-size:13px">Prices below are final for your unit. No additional fees.</p>
+
+              <div class="tier-grid" id="tierGrid">
+                <div class="tier" data-tier="simple" data-price="149">
+                  <div class="name">Simple</div>
+                  <div class="desc">A standard top-to-bottom tidy. Great for between-stay refresh.</div>
+                  <div class="price">$149<small> · 2 hrs</small></div>
+                  <ul><li>Dust, vacuum, mop</li><li>Kitchen &amp; bath wipe-down</li><li>Trash &amp; surfaces</li></ul>
+                </div>
+                <div class="tier selected" data-tier="plus" data-price="219">
+                  <div class="ribbon">MOST POPULAR</div>
+                  <div class="name">Plus <span class="pill">+ FRIDGE</span></div>
+                  <div class="desc">Simple, plus inside fridge &amp; oven, baseboards, and window sills.</div>
+                  <div class="price">$219<small> · 3 hrs</small></div>
+                  <ul><li>Everything in Simple</li><li>Inside fridge &amp; oven</li><li>Baseboards &amp; sills</li></ul>
+                </div>
+                <div class="tier" data-tier="deep" data-price="319">
+                  <div class="name">Deep</div>
+                  <div class="desc">Full deep clean for heavily used or long-occupied units.</div>
+                  <div class="price">$319<small> · 4–5 hrs</small></div>
+                  <ul><li>Everything in Plus</li><li>Grout, tile &amp; cabinets</li><li>Inside windows &amp; vents</li></ul>
+                </div>
+                <div class="tier" data-tier="moveout" data-price="389">
+                  <div class="name">Move-Out</div>
+                  <div class="desc">Turn-ready cleaning designed to maximize your deposit return.</div>
+                  <div class="price">$389<small> · 5–6 hrs</small></div>
+                  <ul><li>Deep clean spec</li><li>Wall scuff removal</li><li>2B Living turn checklist</li></ul>
+                </div>
+              </div>
+
+              <div class="form-grid" style="margin-top:18px">
+                <div class="field">
+                  <label>Add-ons (optional)</label>
+                  <select id="addons">
+                    <option value="0">None</option>
+                    <option value="60">+ Carpet shampoo ($60)</option>
+                    <option value="45">+ Inside windows ($45)</option>
+                    <option value="105">+ Carpet shampoo &amp; windows ($105)</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>Notes for your pro (optional)</label>
+                  <textarea placeholder="e.g. Buzzer on #105 — call 719-648-7104. Cat in second bedroom."></textarea>
+                </div>
+              </div>
+
+              <div class="actions">
+                <button class="btn ghost" onclick="goto(0)">← Back</button>
+                <div style="display:flex;align-items:center;gap:18px">
+                  <span class="price-tag">Total so far: <b id="runningTotal">$219</b></span>
+                  <button class="btn" onclick="goto(2)">Continue to Schedule →</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- STEP 2 — Schedule -->
+        <section class="step-pane" data-step="2">
+          <div class="card">
+            <div class="body">
+              <div class="step-bar">
+                <div class="s done"><span class="num">✓</span>Service</div>
+                <div class="line"></div>
+                <div class="s active"><span class="num">2</span>Schedule</div>
+                <div class="line"></div>
+                <div class="s"><span class="num">3</span>Pay</div>
+              </div>
+
+              <h2 style="margin:14px 0 4px;font-size:16px;color:#19303a">Pick a date &amp; arrival window</h2>
+              <p style="margin:0 0 14px;color:var(--muted);font-size:13px">All times America/Los_Angeles. Same-day &amp; weekend windows available.</p>
+
+              <div class="slot-grid" id="slotGrid">
+                <div class="slot"><div class="day">Wed</div><div class="date">May 20</div><div class="win">8a–10a</div></div>
+                <div class="slot"><div class="day">Wed</div><div class="date">May 20</div><div class="win">12p–2p</div></div>
+                <div class="slot selected"><div class="day">Thu</div><div class="date">May 21</div><div class="win">9a–11a</div></div>
+                <div class="slot"><div class="day">Thu</div><div class="date">May 21</div><div class="win">1p–3p</div></div>
+                <div class="slot"><div class="day">Fri</div><div class="date">May 22</div><div class="win">8a–10a</div></div>
+                <div class="slot"><div class="day">Fri</div><div class="date">May 22</div><div class="win">2p–4p</div></div>
+                <div class="slot"><div class="day">Sat</div><div class="date">May 23</div><div class="win">9a–11a</div></div>
+                <div class="slot"><div class="day">Sat</div><div class="date">May 23</div><div class="win">1p–3p</div></div>
+              </div>
+
+              <div class="form-grid" style="margin-top:18px">
+                <div class="field">
+                  <label>Tied to a move event?</label>
+                  <select>
+                    <option>Move-out — keys returned May 24</option>
+                    <option>Move-in</option>
+                    <option>Neither — just a clean</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>Pro access</label>
+                  <select>
+                    <option>I'll be home</option>
+                    <option>Building staff will let pro in</option>
+                    <option>Lockbox / smart lock code (enter at checkout)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="actions">
+                <button class="btn ghost" onclick="goto(1)">← Back</button>
+                <div style="display:flex;align-items:center;gap:18px">
+                  <span class="price-tag">Total: <b id="runningTotal2">$219</b></span>
+                  <button class="btn" onclick="goto(3)">Continue to Payment →</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- STEP 3 — Pay -->
+        <section class="step-pane" data-step="3">
+          <div class="card">
+            <div class="body">
+              <div class="step-bar">
+                <div class="s done"><span class="num">✓</span>Service</div>
+                <div class="line"></div>
+                <div class="s done"><span class="num">✓</span>Schedule</div>
+                <div class="line"></div>
+                <div class="s active"><span class="num">3</span>Pay</div>
+              </div>
+
+              <div class="review-grid">
+                <!-- Left: review -->
+                <div class="review-card">
+                  <h3>Order summary</h3>
+                  <div class="kv"><span class="k">Service</span><span class="v" id="sumService">Plus Cleaning</span></div>
+                  <div class="kv"><span class="k">Unit</span><span class="v">#105 · 3155 Broderick St</span></div>
+                  <div class="kv"><span class="k">Date &amp; time</span><span class="v">Thu, May 21 · 9a–11a</span></div>
+                  <div class="kv"><span class="k">Add-ons</span><span class="v" id="sumAddons">None</span></div>
+                  <div class="kv"><span class="k">Subtotal</span><span class="v" id="sumSubtotal">$219.00</span></div>
+                  <div class="kv"><span class="k">SF service fee</span><span class="v">$12.00</span></div>
+                  <div class="kv"><span class="k">Estimated tax</span><span class="v" id="sumTax">$19.71</span></div>
+                  <div class="total"><span>Total due today</span><span id="sumTotal">$250.71</span></div>
+                  <p style="margin:14px 0 0;font-size:12.5px;color:var(--muted);line-height:1.5">
+                    No charges until you confirm. Cancel free up to 24h before your window.
+                  </p>
+                </div>
+
+                <!-- Right: payment -->
+                <div>
+                  <div class="stripe-card">
+                    <div class="brand-mark">stripe</div>
+                    <div class="field"><label>Card number</label><input value="4242 4242 4242 4242" /></div>
+                    <div class="row">
+                      <div class="field"><label>Expiry</label><input value="12 / 28" /></div>
+                      <div class="field"><label>CVC</label><input value="123" /></div>
+                      <div class="field"><label>ZIP</label><input value="94123" /></div>
+                    </div>
+                    <div class="field" style="margin-top:10px"><label>Name on card</label><input value="Everett Lynn" /></div>
+                  </div>
+
+                  <div class="tos">
+                    <input type="checkbox" id="tosbox" checked />
+                    <label for="tosbox">
+                      I agree to the <a href="#">Amenify Terms of Service</a>, <a href="#">Cancellation Policy</a>, and authorize Amenify to access unit #105 at the scheduled window to perform the requested service. I acknowledge service is provided by Amenify, not 2B Living.
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="actions">
+                <button class="btn ghost" onclick="goto(2)">← Back</button>
+                <div style="display:flex;align-items:center;gap:18px">
+                  <span class="powered"><span class="dot"></span>Secure checkout · <b>Powered by Amenify</b></span>
+                  <button class="btn lg" onclick="goto(4)">Confirm &amp; Pay $250.71 →</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- STEP 4 — Confirmation -->
+        <section class="step-pane" data-step="4">
+          <div class="card">
+            <div class="body">
+              <div class="confirm">
+                <div class="ck-big">✓</div>
+                <h2>You're booked.</h2>
+                <p>A licensed Amenify housekeeper is confirmed for <b>Thu, May 21 · 9a–11a</b>.</p>
+                <p>We've emailed the receipt to <b>everett@amenify.com</b> and notified 2B Living of access for the window.</p>
+                <div class="booking-id">Booking #AM-2026-05-7841</div>
+
+                <div class="next">
+                  <h4>What happens next</h4>
+                  <div class="step-li"><span class="n">1</span><div>You'll get an SMS with your pro's name &amp; photo the morning of the clean.</div></div>
+                  <div class="step-li"><span class="n">2</span><div>Live arrival tracking opens 30 minutes before the window.</div></div>
+                  <div class="step-li"><span class="n">3</span><div>After service, rate the clean. Anything missed? One-tap re-clean — on us.</div></div>
+                </div>
+
+                <div style="margin-top:24px;display:flex;gap:10px;justify-content:center">
+                  <button class="btn ghost" onclick="goto(0)">Book another service</button>
+                  <button class="btn" onclick="alert('Returning to 2B Living portal…')">Back to portal</button>
+                </div>
+
+                <div style="margin-top:24px"><span class="powered"><span class="dot"></span>Powered by <b>Amenify</b></span></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- footer matches AppFolio -->
+      <div class="footer">
+        <div class="left">
+          <b>2B Living, Inc.</b>
+          <span>(650) 763-8552 · Visit Our Website · Help · Terms · Privacy</span>
+        </div>
+        <div class="right"><span class="appfolio">appfolio</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <p style="font-size:12px;color:#6c7783;text-align:center;margin:14px 0 6px">
+    This mockup mirrors the live 2B Living / AppFolio resident portal. The same embed pattern works for any PMS partner — Yardi, RealPage, Buildium, etc. — by mapping the partner's nav, brand mark, and color palette.
+  </p>
+
+</div>
+
+<script>
+  // step navigation
+  const steps = document.querySelectorAll('.step-pane');
+  const topDots = document.querySelectorAll('.demo-steps .step-dot');
+  function goto(i){
+    steps.forEach((s,idx)=>s.classList.toggle('active', idx===i));
+    topDots.forEach((d,idx)=>d.classList.toggle('is-active', idx===i));
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+  topDots.forEach(d=>d.addEventListener('click',()=>goto(parseInt(d.dataset.step))));
+
+  // tier selection + price math
+  const tiers = document.querySelectorAll('.tier');
+  const addonsSel = document.getElementById('addons');
+  function priceForTier(){
+    const sel = document.querySelector('.tier.selected');
+    const base = sel ? parseInt(sel.dataset.price) : 0;
+    const add = parseInt(addonsSel.value || 0);
+    return base + add;
+  }
+  function fmt(n){ return '$' + n.toFixed(2); }
+  function refreshPrices(){
+    const sub = priceForTier();
+    const fee = 12;
+    const tax = +(sub * 0.09).toFixed(2);
+    const total = +(sub + fee + tax).toFixed(2);
+    document.getElementById('runningTotal').textContent = '$' + sub;
+    document.getElementById('runningTotal2').textContent = '$' + sub;
+    document.getElementById('sumSubtotal').textContent = fmt(sub);
+    document.getElementById('sumTax').textContent = fmt(tax);
+    document.getElementById('sumTotal').textContent = fmt(total);
+    // service label
+    const sel = document.querySelector('.tier.selected');
+    const name = sel ? sel.querySelector('.name').childNodes[0].nodeValue.trim() : 'Cleaning';
+    document.getElementById('sumService').textContent = name + ' Cleaning';
+    // addons label
+    const t = addonsSel.options[addonsSel.selectedIndex].text;
+    document.getElementById('sumAddons').textContent = t.startsWith('None') ? 'None' : t.replace(/\s*\(\$\d+\)/,'');
+    // update Confirm button label
+    const btn = document.querySelector('.step-pane[data-step="3"] .btn.lg');
+    if (btn) btn.textContent = 'Confirm & Pay ' + fmt(total) + ' →';
+  }
+  tiers.forEach(t=>t.addEventListener('click',()=>{
+    tiers.forEach(x=>x.classList.remove('selected'));
+    t.classList.add('selected');
+    refreshPrices();
+  }));
+  addonsSel.addEventListener('change', refreshPrices);
+  refreshPrices();
+
+  // time slot select
+  document.querySelectorAll('#slotGrid .slot').forEach(s=>{
+    s.addEventListener('click',()=>{
+      document.querySelectorAll('#slotGrid .slot').forEach(x=>x.classList.remove('selected'));
+      s.classList.add('selected');
+    });
+  });
+</script>
+</body>
+</html>
