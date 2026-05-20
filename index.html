@@ -305,6 +305,32 @@
   .mock-toast .dot{width:8px;height:8px;border-radius:50%;background:#f0a23a;flex-shrink:0}
   .mock-toast .msg b{color:#f0a23a;font-weight:600}
 
+  /* persistent gentle breathing on primary CTA of active step */
+  @keyframes breathe-cta{
+    0%, 100% { box-shadow: 0 0 0 0 rgba(30,127,194,0); }
+    50%      { box-shadow: 0 0 0 8px rgba(30,127,194,0.22); }
+  }
+  .step-pane.active .btn.lg,
+  .step-pane.active .actions .btn:not(.ghost){
+    animation: breathe-cta 2.6s ease-in-out infinite;
+  }
+
+  /* one-time strong hint pulse fired on dead-click or step entry */
+  @keyframes hint-pulse{
+    0%   { box-shadow: 0 0 0 0 rgba(240,162,58,0.55); }
+    70%  { box-shadow: 0 0 0 14px rgba(240,162,58,0); }
+    100% { box-shadow: 0 0 0 0 rgba(240,162,58,0); }
+  }
+  .hint-flash{
+    animation: hint-pulse 1s ease-out 2;
+    position:relative;z-index:2;
+  }
+  /* tier/slot cards get an extra outline tint while pulsing */
+  .tier.hint-flash:not(.selected),
+  .slot.hint-flash:not(.selected){
+    border-color:#f0a23a !important;
+  }
+
   @media (max-width:1080px){
     .portal{grid-template-columns:200px 1fr}
     .tier-grid{grid-template-columns:repeat(2,1fr)}
@@ -690,8 +716,30 @@
     steps.forEach((s,idx)=>s.classList.toggle('active', idx===i));
     topDots.forEach((d,idx)=>d.classList.toggle('is-active', idx===i));
     window.scrollTo({top:0,behavior:'smooth'});
+    // briefly point out what's clickable on the new step
+    setTimeout(showHints, 400);
   }
   topDots.forEach(d=>d.addEventListener('click',()=>goto(parseInt(d.dataset.step))));
+
+  // Flash interactive elements on the currently-active step so users
+  // can see what's clickable. Targets primary CTAs, tier cards, slots,
+  // and any other obvious affordances on the visible step.
+  function showHints(){
+    const active = document.querySelector('.step-pane.active');
+    if (!active) return;
+    const targets = active.querySelectorAll(
+      '.cta-row .btn, .actions .btn:not(.ghost), .tier, #slotGrid .slot, .confirm .btn'
+    );
+    targets.forEach(el => {
+      el.classList.remove('hint-flash');
+      // restart animation cleanly on rapid re-trigger
+      void el.offsetWidth;
+      el.classList.add('hint-flash');
+      setTimeout(()=>el.classList.remove('hint-flash'), 2100);
+    });
+  }
+  // hint once shortly after page load so first-time visitors get oriented
+  setTimeout(showHints, 900);
 
   // tier selection + price math
   const tiers = document.querySelectorAll('.tier');
@@ -782,7 +830,8 @@
         goto(0);
       } else {
         const label = sideLink.textContent.replace(/NEW$/,'').trim();
-        flashMock(sideLink, "Mockup only — <b>" + label + "</b> isn't wired up. Try <b>Service Pros</b>.");
+        flashMock(sideLink, "Mockup only — <b>" + label + "</b> isn't wired up. Try the highlighted options →");
+        showHints();
       }
       return;
     }
@@ -790,19 +839,22 @@
     const logout = e.target.closest('.topbar .logout');
     if (logout){
       e.preventDefault();
-      flashMock(logout, "Mockup only — <b>Log Out</b> is disabled.");
+      flashMock(logout, "Mockup only — <b>Log Out</b> is disabled. Try the highlighted options →");
+      showHints();
       return;
     }
     // Partner brand mark
     const brand = e.target.closest('.topbar .brand');
     if (brand){
-      flashMock(brand, "Mockup only — partner brand area.");
+      flashMock(brand, "Mockup only — partner brand area. Try the highlighted options →");
+      showHints();
       return;
     }
     // Footer text
     const footer = e.target.closest('.footer');
     if (footer){
-      flashMock(footer, "Mockup only — footer links are disabled.");
+      flashMock(footer, "Mockup only — footer links are disabled. Try the highlighted options →");
+      showHints();
       return;
     }
   });
